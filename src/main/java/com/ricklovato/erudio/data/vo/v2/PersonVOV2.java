@@ -1,30 +1,29 @@
-package com.ricklovato.erudio.model;
-
-import jakarta.persistence.*;
+package com.ricklovato.erudio.data.vo.v2;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
-@Entity
-@Table(name = "person")
-public class Person implements Serializable {
+
+public class PersonVOV2 implements Serializable {
+
+
     @Serial
-    private static final long serialVersionUID = 7106798548453859221L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private static final long serialVersionUID = 5999772674947583704L;
     private Long id;
-    @Column(name = "first_name",nullable = false, length = 80)
+
     private String firstName;
-    @Column(name = "last_name",nullable = false)
+
     private String lastName;
-    @Column(nullable = false)
+
     private String address;
-    @Column(nullable = false, length = 6)
+
     private String gender;
 
+    private Date birthDay;
 
-    public Person() {
+    public PersonVOV2() {
     }
 
     public Long getId() {
@@ -65,6 +64,14 @@ public class Person implements Serializable {
         return gender;
     }
 
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
+    }
+
     public void setGender(String gender) {
         this.gender = gender;
     }
@@ -73,12 +80,12 @@ public class Person implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Person person = (Person) o;
-        return Objects.equals(id, person.id) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(address, person.address) && Objects.equals(gender, person.gender);
+        PersonVOV2 that = (PersonVOV2) o;
+        return id.equals(that.id) && firstName.equals(that.firstName) && lastName.equals(that.lastName) && address.equals(that.address) && gender.equals(that.gender) && birthDay.equals(that.birthDay);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, address, gender);
+        return Objects.hash(id, firstName, lastName, address, gender, birthDay);
     }
 }

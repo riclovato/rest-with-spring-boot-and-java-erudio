@@ -1,30 +1,33 @@
-package com.ricklovato.erudio.model;
+package com.ricklovato.erudio.data.vo.v1;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
-@Table(name = "person")
-public class Person implements Serializable {
+@JsonPropertyOrder({"id","address","firstName","lastName","gender"})
+
+public class PersonVO implements Serializable {
+
+
     @Serial
-    private static final long serialVersionUID = 7106798548453859221L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private static final long serialVersionUID = 5999772674947583704L;
     private Long id;
-    @Column(name = "first_name",nullable = false, length = 80)
+@JsonProperty("first_name")
     private String firstName;
-    @Column(name = "last_name",nullable = false)
+@JsonProperty("last_name")
     private String lastName;
-    @Column(nullable = false)
+
     private String address;
-    @Column(nullable = false, length = 6)
+    @JsonIgnore
     private String gender;
 
 
-    public Person() {
+    public PersonVO() {
     }
 
     public Long getId() {
@@ -73,7 +76,7 @@ public class Person implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Person person = (Person) o;
+        PersonVO person = (PersonVO) o;
         return Objects.equals(id, person.id) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(address, person.address) && Objects.equals(gender, person.gender);
     }
 
