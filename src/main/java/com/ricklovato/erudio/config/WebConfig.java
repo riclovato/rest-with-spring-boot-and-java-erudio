@@ -12,31 +12,38 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    // Define o tipo de mídia para YAML
     private static final MediaType MEDIA_TYPE_APPLICATION_YML = MediaType.valueOf("application/x-yaml");
+
+    // Sobrescreve o método extendMessageConverters da interface WebMvcConfigurer
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // Chama a implementação padrão do método
         WebMvcConfigurer.super.extendMessageConverters(converters);
+        // Adiciona um conversor personalizado para converter objetos Java em YAML e vice-versa
         converters.add(new YamlJackson2HttpMessageConverter());
     }
+
+    // Sobrescreve o método configureContentNegotiation da interface WebMvcConfigurer
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        // Chama a implementação padrão do método
         WebMvcConfigurer.super.configureContentNegotiation(configurer);
-//        //via Query PARAM http://localhost:8080/api/person/v1?mediaType=xml
-//        configurer.favorParameter(true).parameterName("mediaType").ignoreAcceptHeader(true)
-//                .useRegisteredExtensionsOnly(false)
-//                .defaultContentType(MediaType.APPLICATION_JSON)
-//                .mediaType("json",MediaType.APPLICATION_JSON)
-//                .mediaType("xml",MediaType.APPLICATION_XML);
 
-        //via Header PARAM http://localhost:8080/api/person/v1?mediaType=xml
-        configurer.favorParameter(false)
+        // Define as opções de negociação de conteúdo
+        configurer
+                // Define que a negociação de conteúdo será feita via cabeçalho da requisição
+                .favorParameter(false)
+                // Define que a negociação de conteúdo não irá ignorar o cabeçalho Accept enviado pelo cliente
                 .ignoreAcceptHeader(false)
+                // Define que a negociação de conteúdo não irá se basear nas extensões registradas
                 .useRegisteredExtensionsOnly(false)
+                // Define o tipo de mídia padrão para JSON
                 .defaultContentType(MediaType.APPLICATION_JSON)
-                .mediaType("json",MediaType.APPLICATION_JSON)
-                .mediaType("xml",MediaType.APPLICATION_XML)
-                .mediaType("x-yaml",MEDIA_TYPE_APPLICATION_YML);
+                // Define os tipos de mídia aceitos, com seus respectivos tipos de mídia correspondentes
+                .mediaType("json", MediaType.APPLICATION_JSON)
+                .mediaType("xml", MediaType.APPLICATION_XML)
+                .mediaType("x-yaml", MEDIA_TYPE_APPLICATION_YML);
+
     }
-
-
 }

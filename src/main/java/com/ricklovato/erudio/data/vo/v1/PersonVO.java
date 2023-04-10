@@ -1,23 +1,21 @@
 package com.ricklovato.erudio.data.vo.v1;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.dozermapper.core.Mapping;
-import jakarta.persistence.*;
 import org.springframework.hateoas.RepresentationModel;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-
+//Define a ordem de exibição do json
 @JsonPropertyOrder({"id","firstName","lastName","address","gender"})
 public class PersonVO extends RepresentationModel<PersonVO> implements Serializable {
 
 
     @Serial
     private static final long serialVersionUID = 5999772674947583704L;
+   //faz a ligação do key com o id de Person e exibe o key como "id"
     @Mapping("id")
     @JsonProperty("id")
     private Long key;

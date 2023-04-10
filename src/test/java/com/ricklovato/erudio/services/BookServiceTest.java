@@ -1,25 +1,28 @@
 package com.ricklovato.erudio.services;
 
-import com.ricklovato.erudio.data.vo.v1.PersonVO;
+import com.ricklovato.erudio.data.vo.v1.BookVO;
 import com.ricklovato.erudio.exceptions.RequiredObjectIsNullException;
-import com.ricklovato.erudio.model.Person;
-import com.ricklovato.erudio.repositories.PersonRepository;
-import com.ricklovato.erudio.unittests.mapper.mocks.MockPerson;
+import com.ricklovato.erudio.model.Book;
+
+import com.ricklovato.erudio.repositories.BookRepository;
+import com.ricklovato.erudio.unittests.mapper.mocks.MockBook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
+import static org.hamcrest.Matchers.any;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 // Indica que a classe de teste manterá uma única instância para todos os testes,
 // permitindo compartilhar estados entre eles
@@ -27,23 +30,23 @@ import java.util.Optional;
 
 // Indica a utilização do MockitoExtension para executar os testes com o Mockito
 @ExtendWith(MockitoExtension.class)
-class PersonServiceTest {
+class BookServiceTest {
 
-    // Criação de um objeto MockPerson para utilização nos testes
-    MockPerson input;
+    // Criação de um objeto MockBook para utilização nos testes
+    MockBook input;
 
     // Injeção de dependências utilizando o InjectMocks do Mockito
     @InjectMocks
-    private PersonService service;
+    private BookService service;
 
     // Criação de um objeto mock para o repositório de pessoas
     @Mock
-    PersonRepository repository;
+    BookRepository repository;
 
     // Método que é executado antes de cada teste
     @BeforeEach
     void setUpMocks() {
-        input = new MockPerson();
+        input = new MockBook();
         // Inicialização dos objetos mock
         MockitoAnnotations.openMocks(this);
     }
@@ -52,55 +55,54 @@ class PersonServiceTest {
     @Test
     void findAll() {
 
-        List<Person> list = input.mockEntityList();
+        List<Book> list = input.mockEntityList();
 
         when(repository.findAll()).thenReturn(list);
-        var people = service.findAll();
+        var books = service.findAll();
 
         // Verificação dos resultados obtidos
-        assertNotNull(people);
-        assertEquals(14,people.size());
+        assertNotNull(books);
+        assertEquals(14,books.size());
 
-        var personOne = people.get(1);
+        var bookOne = books.get(1);
 
-        assertNotNull(personOne);
-        assertNotNull(personOne.getKey());
-        assertNotNull(personOne.getLinks());
-        assertTrue(personOne.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
-        assertEquals("Address Test1", personOne.getAddress());
-        assertEquals("First Name Test1", personOne.getFirstName());
-        assertEquals("Last Name Test1", personOne.getLastName());
-        assertEquals("Female", personOne.getGender());
+        assertNotNull(bookOne);
+        assertNotNull(bookOne.getKey());
+        assertNotNull(bookOne.getLinks());
+        assertTrue(bookOne.toString().contains("links: [</api/book/v1/1>;rel=\"self\"]"));
+        assertEquals("Author Test1", bookOne.getAuthor());
+        assertNotNull(bookOne.getLaunchDate());
+        assertEquals(25D, bookOne.getPrice());
+        assertEquals("Title Test1", bookOne.getTitle());
 
-        var personFour = people.get(4);
+        var bookFour = books.get(4);
 
-        assertNotNull(personFour);
-        assertNotNull(personFour.getKey());
-        assertNotNull(personFour.getLinks());
-        assertTrue(personFour.toString().contains("links: [</api/person/v1/4>;rel=\"self\"]"));
-        assertEquals("Address Test4", personFour.getAddress());
-        assertEquals("First Name Test4", personFour.getFirstName());
-        assertEquals("Last Name Test4", personFour.getLastName());
-        assertEquals("Male", personFour.getGender());
+        assertNotNull(bookFour);
+        assertNotNull(bookFour.getKey());
+        assertNotNull(bookFour.getLinks());
+        assertTrue(bookFour.toString().contains("links: [</api/book/v1/4>;rel=\"self\"]"));
+        assertEquals("Author Test4", bookFour.getAuthor());
+        assertNotNull(bookFour.getLaunchDate());
+        assertEquals(25D, bookFour.getPrice());
+        assertEquals("Title Test4", bookFour.getTitle());
 
-        var personSeven = people.get(7);
+        var bookSeven = books.get(7);
 
-        assertNotNull(personSeven);
-        assertNotNull(personSeven.getKey());
-        assertNotNull(personSeven.getLinks());
-        assertTrue(personSeven.toString().contains("links: [</api/person/v1/7>;rel=\"self\"]"));
-        assertEquals("Address Test7", personSeven.getAddress());
-        assertEquals("First Name Test7", personSeven.getFirstName());
-        assertEquals("Last Name Test7", personSeven.getLastName());
-        assertEquals("Female", personSeven.getGender());
-
+        assertNotNull(bookSeven);
+        assertNotNull(bookSeven.getKey());
+        assertNotNull(bookSeven.getLinks());
+        assertTrue(bookSeven.toString().contains("links: [</api/book/v1/7>;rel=\"self\"]"));
+        assertEquals("Author Test7", bookSeven.getAuthor());
+        assertNotNull(bookSeven.getLaunchDate());
+        assertEquals(25D, bookSeven.getPrice());
+        assertEquals("Title Test7", bookSeven.getTitle());
     }
 
     // Teste para o método findById
     @Test
     void findById() {
         // Criação de uma entidade de pessoa com ID 1
-        Person entity = input.mockEntity(1);
+        Book entity = input.mockEntity(1);
         entity.setId(1L);
 
         // Configuração do comportamento do repositório para quando o método findById é chamado com o ID 1
@@ -113,44 +115,42 @@ class PersonServiceTest {
         assertNotNull(result);
         assertNotNull(result.getKey());
         assertNotNull(result.getLinks());
-        assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
-        assertEquals("Address Test1", result.getAddress());
-        assertEquals("First Name Test1", result.getFirstName());
-        assertEquals("Last Name Test1", result.getLastName());
-        assertEquals("Female", result.getGender());
+        assertTrue(result.toString().contains("links: [</api/book/v1/1>;rel=\"self\"]"));
+        assertEquals("Author Test1", result.getAuthor());
+        assertNotNull(result.getLaunchDate());
+        assertEquals(25D, result.getPrice());
+        assertEquals("Title Test1", result.getTitle());
     }
 
     // Teste para o método create
     @Test
     void create() {
         // Criação de uma entidade de pessoa com ID 1
-        Person entity = input.mockEntity(2);
-        Person persisted = entity;
+        Book entity = input.mockEntity(1);
+        entity.setId(1L);
+        Book persisted = entity;
         persisted.setId(1L);
 
         // Criação de um objeto VO de pessoa com ID 1
-        PersonVO vo = input.mockVO(2);
+        BookVO vo = input.mockVO(1);
         vo.setKey(1L);
 
-        // Configuração do comportamento do repositório para quando o método save é chamado com a entidade
-        when(repository.save(entity)).thenReturn(persisted);
 
-        // Execução do método a ser testado
+        doReturn(persisted).when(repository).save(Mockito.any(Book.class));
+
+
         var result = service.create(vo);
-
-        // Verificação dos resultados obtidos
         assertNotNull(result);
         assertNotNull(result.getKey());
         assertNotNull(result.getLinks());
-
-        assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
-        assertEquals("Address Test2", result.getAddress());
-        assertEquals("First Name Test2", result.getFirstName());
-        assertEquals("Last Name Test2", result.getLastName());
-        assertEquals("Male", result.getGender());
+        assertTrue(result.toString().contains("links: [</api/book/v1/1>;rel=\"self\"]"));
+        assertEquals("Author Test1", result.getAuthor());
+        assertNotNull(result.getLaunchDate());
+        assertEquals(25D, result.getPrice());
+        assertEquals("Title Test1", result.getTitle());
     }
 @Test
-    void createWithNullPerson() {
+    void createWithNullBook() {
      Exception exception = assertThrows(RequiredObjectIsNullException.class,() -> {
          service.create(null);
      });
@@ -164,13 +164,13 @@ class PersonServiceTest {
     void update() {
 
         // Criação de uma entidade de pessoa com ID 1
-        Person entity = input.mockEntity(2);
+        Book entity = input.mockEntity(2);
         entity.setId(1L);
-        Person persisted = entity;
+        Book persisted = entity;
         persisted.setId(1L);
 
         // Criação de um objeto VO de pessoa com ID 1
-        PersonVO vo = input.mockVO(2);
+        BookVO vo = input.mockVO(2);
         vo.setKey(1L);
 
         // Configuração do comportamento do repositório para quando o método save é chamado com a entidade
@@ -185,15 +185,15 @@ class PersonServiceTest {
         assertNotNull(result.getKey());
         assertNotNull(result.getLinks());
 
-        assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
-        assertEquals("Address Test2", result.getAddress());
-        assertEquals("First Name Test2", result.getFirstName());
-        assertEquals("Last Name Test2", result.getLastName());
-        assertEquals("Male", result.getGender());
+        assertTrue(result.toString().contains("links: [</api/book/v1/1>;rel=\"self\"]"));
+        assertEquals("Author Test2", result.getAuthor());
+        assertNotNull(result.getLaunchDate());
+        assertEquals(25D, result.getPrice());
+        assertEquals("Title Test2", result.getTitle());
     }
 
     @Test
-    void updateWithNullPerson() {
+    void updateWithNullBook() {
         Exception exception = assertThrows(RequiredObjectIsNullException.class,() -> {
             service.update(null);
         });
@@ -206,7 +206,7 @@ class PersonServiceTest {
     @Test
     void delete() {
         // Criação de uma entidade de pessoa com ID 1
-        Person entity = input.mockEntity(1);
+        Book entity = input.mockEntity(1);
         entity.setId(1L);
 
         // Configuração do comportamento do repositório para quando o método findById é chamado com o ID 1
