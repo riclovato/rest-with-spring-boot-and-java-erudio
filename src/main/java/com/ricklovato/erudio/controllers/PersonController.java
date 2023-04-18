@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
+//@CrossOrigin
 @RestController
 @RequestMapping("/api/person/v1")
 @Tag(name = "People", description = "Endpoints for Mananing People")
@@ -25,7 +25,7 @@ public class PersonController {
     private PersonService service;
     //private PersonVOServices service = new PersonVOService();
     private final AtomicLong counter = new AtomicLong();
-
+    @CrossOrigin(origins = "http://localhost:8080")
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,MediaType.APPLICATION_YML})
     @Operation(summary = "Finds a person", description = "Finds a person", tags = {"People"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200",
@@ -36,6 +36,7 @@ public class PersonController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
     })
+
     public PersonVO findById(@PathVariable(value = "id") Long id) {
         return service.findById(id);
     }
@@ -58,6 +59,7 @@ public class PersonController {
 
         return service.findAll();
     }
+    @CrossOrigin(origins = {"http://localhost:8080", "https://erudio.com.br"})
     @PostMapping(
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,MediaType.APPLICATION_YML},
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,MediaType.APPLICATION_YML})

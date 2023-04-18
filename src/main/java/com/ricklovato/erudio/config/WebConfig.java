@@ -1,10 +1,12 @@
 package com.ricklovato.erudio.config;
 
 import com.ricklovato.erudio.serialization.converter.YamlJackson2HttpMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -14,6 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     // Define o tipo de mídia para YAML
     private static final MediaType MEDIA_TYPE_APPLICATION_YML = MediaType.valueOf("application/x-yaml");
+    @Value("${cors.originPatterns:default}")
+    private  String corsOriginPatterns = "";
 
     // Sobrescreve o método extendMessageConverters da interface WebMvcConfigurer
     @Override
@@ -22,6 +26,18 @@ public class WebConfig implements WebMvcConfigurer {
         WebMvcConfigurer.super.extendMessageConverters(converters);
         // Adiciona um conversor personalizado para converter objetos Java em YAML e vice-versa
         converters.add(new YamlJackson2HttpMessageConverter());
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        var allowedOrigins = corsOriginPatterns.split(",");
+        //todas as rotas da api
+        registry.addMapping("/**")
+                //.allowedMethods("GET","POST","PUT");
+                .allowedMethods("*")
+                .allowedOrigins(allowedOrigins)
+                .allowCredentials(true);
+
     }
 
     // Sobrescreve o método configureContentNegotiation da interface WebMvcConfigurer
