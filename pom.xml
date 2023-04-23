@@ -141,8 +141,6 @@
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>1.70</version> <!-- substitua pela versão mais recente disponível -->
         </dependency>
-
-
     </dependencies>
 
     <build>

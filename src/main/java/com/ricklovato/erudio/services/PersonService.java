@@ -8,9 +8,13 @@ import com.ricklovato.erudio.mapper.DozerMapper;
 import com.ricklovato.erudio.mapper.custom.PersonMapper;
 import com.ricklovato.erudio.model.Person;
 import com.ricklovato.erudio.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,13 +34,16 @@ public class PersonService {
     PersonMapper mapper;
 
     // método que busca todos os registros de Person no banco de dados
-    public List<PersonVO> findAll() {
+    public Page<PersonVO> findAll(Pageable pageable) {
         logger.info("Finding all people");
         // busca todos os registros de Person no banco de dados e converte cada um para um objeto PersonVO
-        var persons = DozerMapper.parseListObject(repository.findAll(),PersonVO.class);
-        // adiciona links HATEOAS que permitem acessar cada registro individualmente
-        persons.stream().forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
-        return persons;
+        var personPage = repository.findAll(pageable);
+        // cada p é uma entidade do tipo Person
+        var personVOPage = personPage.map(p -> DozerMapper.parseObject(p,PersonVO.class));
+        //adiciona os links hateoas
+        personVOPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+        return personVOPage;
     }
 
     // método que busca um registro específico de Person no banco de dados a partir do seu ID
@@ -88,6 +95,15 @@ public class PersonService {
 
     }
 
+    @Transactional
+    public PersonVO disablePerson(Long id) {
+        logger.info("Disabling one person!");
+        repository.disablePerson(id);
+        var entity = repository.findById(id).orElseThrow(() -> new RuntimeException("No records found for this ID!"));
+        PersonVO vo = DozerMapper.parseObject(entity,PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+        return vo;
+    }
     public void delete(Long id) {
         // Busca no repositório a pessoa a ser excluída pelo ‘id’ recebido.
         // Caso não encontre, lança uma exceção.

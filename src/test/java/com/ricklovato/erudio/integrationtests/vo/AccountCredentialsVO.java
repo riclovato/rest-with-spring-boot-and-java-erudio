@@ -1,9 +1,11 @@
-package com.ricklovato.erudio.data.vo.v1.security;
+package com.ricklovato.erudio.integrationtests.vo;
+
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
-
+@XmlRootElement
 public class AccountCredentialsVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 2573657817561917209L;
