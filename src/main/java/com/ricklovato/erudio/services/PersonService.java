@@ -15,6 +15,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,13 +32,15 @@ public class PersonService {
     // injeta um objeto PersonRepository para fazer a comunicação com o banco de dados
     @Autowired
     PersonRepository repository;
+    @Autowired
+    PagedResourcesAssembler<PersonVO> assembler;
 
     // injeta um objeto PersonMapper para fazer a conversão de objetos da entidade Person e objetos PersonVO
     @Autowired
     PersonMapper mapper;
 
     // método que busca todos os registros de Person no banco de dados
-    public Page<PersonVO> findAll(Pageable pageable) {
+    public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
         logger.info("Finding all people");
         // busca todos os registros de Person no banco de dados e converte cada um para um objeto PersonVO
         var personPage = repository.findAll(pageable);
@@ -43,7 +49,10 @@ public class PersonService {
         //adiciona os links hateoas
         personVOPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
-        return personVOPage;
+        //adiciona link hateos da página
+        Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(),pageable.getPageSize(),
+                "asc")).withSelfRel();
+        return assembler.toModel(personVOPage,link);
     }
 
     // método que busca um registro específico de Person no banco de dados a partir do seu ID

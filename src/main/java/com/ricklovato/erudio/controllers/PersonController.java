@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,10 +61,15 @@ public class PersonController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<Page<PersonVO>> findAll(@RequestParam(value = "page", defaultValue = "0") Integer page,
-    @RequestParam(value = "limit", defaultValue = "12") Integer limit){
+    public ResponseEntity<PagedModel<EntityModel<PersonVO>>> findAll(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "limit", defaultValue = "12") Integer limit,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction){
+        //ordenação asc ou desc
+        var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
-        Pageable pageable = PageRequest.of(page,limit);
+        //ordenação por firstName
+        Pageable pageable = PageRequest.of(page,limit,Sort.by(sortDirection,"firstName"));
         return ResponseEntity.ok(service.findAll(pageable));
     }
     @CrossOrigin(origins = {"http://localhost:8080", "https://erudio.com.br"})
