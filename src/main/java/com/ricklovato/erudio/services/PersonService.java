@@ -42,19 +42,33 @@ public class PersonService {
     // método que busca todos os registros de Person no banco de dados
     public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
         logger.info("Finding all people");
-        // busca todos os registros de Person no banco de dados e converte cada um para um objeto PersonVO
+
         var personPage = repository.findAll(pageable);
         // cada p é uma entidade do tipo Person
         var personVOPage = personPage.map(p -> DozerMapper.parseObject(p,PersonVO.class));
         //adiciona os links hateoas
         personVOPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
-        //adiciona link hateos da página
+        //adiciona link hateoas da página
         Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(),pageable.getPageSize(),
                 "asc")).withSelfRel();
         return assembler.toModel(personVOPage,link);
     }
 
+    public PagedModel<EntityModel<PersonVO>> findPersonsByName(String firstName,Pageable pageable) {
+        logger.info("Finding all people");
+
+        var personPage = repository.findPersonsByName(firstName,pageable);
+
+        var personVOPage = personPage.map(p -> DozerMapper.parseObject(p,PersonVO.class));
+
+        personVOPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+
+        Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(),pageable.getPageSize(),
+                "asc")).withSelfRel();
+        return assembler.toModel(personVOPage,link);
+    }
     // método que busca um registro específico de Person no banco de dados a partir do seu ID
     public PersonVO findById(Long id) {
         logger.info("Finding one PersonVO");

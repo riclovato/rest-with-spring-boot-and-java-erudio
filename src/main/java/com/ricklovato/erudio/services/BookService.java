@@ -10,9 +10,13 @@ import com.ricklovato.erudio.model.Book;
 import com.ricklovato.erudio.repositories.BookRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -28,27 +32,31 @@ public class BookService {
     @Autowired
     BookRepository repository;
 
-    // injeta um objeto BookMapper para fazer a conversão de objetos da entidade Book e objetos BookVO
+    @Autowired
+    PagedResourcesAssembler<BookVO> assembler;
 
 
-    // método que busca todos os registros de Book no banco de dados
-    public List<BookVO> findAll() {
+
+
+    public PagedModel<EntityModel<BookVO>> findAll(Pageable pageable) {
         logger.info("Finding all book");
-        // busca todos os registros de Book no banco de dados e converte cada um para um objeto BookVO
-        var books = DozerMapper.parseListObject(repository.findAll(),BookVO.class);
-        // adiciona links HATEOAS que permitem acessar cada registro individualmente
-        books.stream().forEach(p -> p.add(linkTo(methodOn(BookController.class).findById(p.getKey())).withSelfRel()));
-        return books;
+        var bookPage = repository.findAll(pageable);
+        var bookVOPage = bookPage.map(b -> DozerMapper.parseObject(b,BookVO.class));
+
+        bookVOPage.map(b -> b.add(linkTo(methodOn(BookController.class).findById(b.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(BookController.class).findAll(pageable.getPageNumber(),pageable.getPageSize(),
+                "asc")).withSelfRel();
+        return assembler.toModel(bookVOPage,link);
     }
 
-    // método que busca um registro específico de Book no banco de dados a partir do seu ID
+
     public BookVO findById(Long id) {
         logger.info("Finding one BookVO");
-        // busca um registro específico de Book no banco de dados a partir do seu ID
+
         var entity = repository.findById(id).orElseThrow(() -> new RuntimeException("No records found for this ID!"));
-        // converte o registro encontrado para um objeto BookVO
+
         BookVO vo = DozerMapper.parseObject(entity,BookVO.class);
-        // adiciona links HATEOAS que permitem acessar o registro
         vo.add(linkTo(methodOn(BookController.class).findById(id)).withSelfRel());
         return vo;
     }

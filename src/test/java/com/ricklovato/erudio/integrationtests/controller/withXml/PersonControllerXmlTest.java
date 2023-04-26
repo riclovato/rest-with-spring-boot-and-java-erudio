@@ -10,6 +10,8 @@ import com.ricklovato.erudio.integrationtests.testcontainers.AbstractIntegration
 import com.ricklovato.erudio.integrationtests.vo.AccountCredentialsVO;
 import com.ricklovato.erudio.integrationtests.vo.PersonVO;
 import com.ricklovato.erudio.integrationtests.vo.TokenVO;
+import com.ricklovato.erudio.integrationtests.vo.pagedModels.PagedModelPerson;
+import com.ricklovato.erudio.integrationtests.vo.wrappers.WrapperPersonVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -231,6 +233,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 				given().spec(specification)
 						.contentType(TestConfigs.CONTENT_TYPE_XML)
 						.accept(TestConfigs.CONTENT_TYPE_XML)
+						.queryParams("page",3,"size",10,"direction","asc")
 						.when()
 						.get()
 						.then()
@@ -242,7 +245,63 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 						//.as(new TypeRef<List<PersonVO>>() {});
 
 
-		List<PersonVO> people = objectMapper.readValue(content, new TypeReference<List<PersonVO>>() {});
+		PagedModelPerson wrapper = objectMapper.readValue(content, PagedModelPerson.class);
+		var people = wrapper.getContent();
+
+		PersonVO foundPersonOne = people.get(0);
+		assertNotNull(foundPersonOne.getId());
+		assertNotNull(foundPersonOne.getFirstName());
+		assertNotNull(foundPersonOne.getLastName());
+		assertNotNull(foundPersonOne.getAddress());
+		assertNotNull(foundPersonOne.getGender());
+		assertTrue(foundPersonOne.getEnabled());
+
+		assertEquals(247,foundPersonOne.getId());
+
+		assertEquals("Anderson", foundPersonOne.getFirstName());
+		assertEquals("Dyka", foundPersonOne.getLastName());
+		assertEquals("79 Spenser Alley", foundPersonOne.getAddress());
+		assertEquals("Male", foundPersonOne.getGender());
+
+		PersonVO foundPerson4= people.get(3);
+
+		assertNotNull(foundPerson4.getId());
+		assertNotNull(foundPerson4.getFirstName());
+		assertNotNull(foundPerson4.getLastName());
+		assertNotNull(foundPerson4.getAddress());
+		assertNotNull(foundPerson4.getGender());
+		assertTrue(foundPerson4.getEnabled());
+
+		assertEquals(589,foundPerson4.getId());
+
+		assertEquals("Annamarie", foundPerson4.getFirstName());
+		assertEquals("Botton", foundPerson4.getLastName());
+		assertEquals("417 Porter Court", foundPerson4.getAddress());
+		assertEquals("Female", foundPerson4.getGender());
+	}
+	@Order(6)
+	@Test
+	public void testFindByName() throws JsonProcessingException,JsonProcessingException {
+		var content =
+				given().spec(specification)
+						.contentType(TestConfigs.CONTENT_TYPE_XML)
+						.accept(TestConfigs.CONTENT_TYPE_XML)
+						.pathParam("firstName", "ayr")
+						.queryParams("page",0,"size",6,"direction","asc")
+						.when()
+						.get("findPersonsByName/{firstName}")
+						.then()
+						.statusCode(200)
+						.extract()
+						.body()
+						.asString();
+
+		//.as(new TypeRef<List<PersonVO>>() {});
+
+
+		PagedModelPerson wrapper = objectMapper.readValue(content, PagedModelPerson.class);
+		var people = wrapper.getContent();
+
 		PersonVO foundPersonOne = people.get(0);
 		assertNotNull(foundPersonOne.getId());
 		assertNotNull(foundPersonOne.getFirstName());
@@ -258,23 +317,9 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 		assertEquals("São Paulo", foundPersonOne.getAddress());
 		assertEquals("Male", foundPersonOne.getGender());
 
-		PersonVO foundPerson4= people.get(3);
 
-		assertNotNull(foundPerson4.getId());
-		assertNotNull(foundPerson4.getFirstName());
-		assertNotNull(foundPerson4.getLastName());
-		assertNotNull(foundPerson4.getAddress());
-		assertNotNull(foundPerson4.getGender());
-		assertTrue(foundPerson4.getEnabled());
-
-		assertEquals(8,foundPerson4.getId());
-
-		assertEquals("Cloud", foundPerson4.getFirstName());
-		assertEquals("Strife", foundPerson4.getLastName());
-		assertEquals("Niflhaim", foundPerson4.getAddress());
-		assertEquals("Male", foundPerson4.getGender());
 	}
-	@Order(7)
+	@Order(8)
 	@Test
 	public void testFindAllWithoutToken() throws JsonProcessingException,JsonProcessingException {
 		RequestSpecification specificationWithoutToken= new RequestSpecBuilder()
@@ -295,6 +340,46 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 
 		//.as(new TypeRef<List<PersonVO>>() {});
 
+	}
+
+	@Order(9)
+	@Test
+	public void testHATEOAS() throws JsonProcessingException,JsonProcessingException {
+		var content =
+				given().spec(specification)
+						.contentType(TestConfigs.CONTENT_TYPE_XML)
+						.accept(TestConfigs.CONTENT_TYPE_XML)
+						.queryParams("page",1,"size",20,"direction","asc")
+						.when()
+						.get()
+						.then()
+						.statusCode(200)
+						.extract()
+						.body()
+						.asString();
+
+
+		assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/api/person/v1/823</href" +
+				"></links>"));
+		assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/api/person/v1/908</href" +
+				"></links>"));
+		assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/api/person/v1/620</href" +
+				"></links" +
+				">"));
+
+		assertTrue(content.contains("<page><size>12</size><totalElements>1004</totalElements><totalPages>84" +
+				"</totalPages><number>1</number></page>"));
+
+		//last
+		assertTrue(content.contains("<links><rel>last</rel><href>http://localhost:8888/api/person/v1?limit=12&amp;direction=asc&amp;page=83&amp;size=12&amp;sort=firstName,asc</href></links>"));
+		//next
+		assertTrue(content.contains("<links><rel>next</rel><href>http://localhost:8888/api/person/v1?limit=12&amp;direction=asc&amp;page=2&amp;size=12&amp;sort=firstName,asc</href></links>"));
+		//self
+		assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/api/person/v1?page=1&amp;limit=12&amp;direction=asc</href></links>"));
+		//prev
+		assertTrue(content.contains("<links><rel>prev</rel><href>http://localhost:8888/api/person/v1?limit=12&amp;direction=asc&amp;page=0&amp;size=12&amp;sort=firstName,asc</href></links>"));
+		//first
+		assertTrue(content.contains("<links><rel>first</rel><href>http://localhost:8888/api/person/v1?limit=12&amp;direction=asc&amp;page=0&amp;size=12&amp;sort=firstName,asc</href></links>"));
 	}
 
 	private void mockPerson() {

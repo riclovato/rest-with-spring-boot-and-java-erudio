@@ -1,15 +1,16 @@
 package com.ricklovato.erudio.integrationtests.controller.withJson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ricklovato.erudio.configs.TestConfigs;
 import com.ricklovato.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.ricklovato.erudio.integrationtests.vo.AccountCredentialsVO;
 import com.ricklovato.erudio.integrationtests.vo.BookVO;
-import com.ricklovato.erudio.integrationtests.vo.BookVO;
+
 import com.ricklovato.erudio.integrationtests.vo.TokenVO;
+import com.ricklovato.erudio.integrationtests.vo.wrappers.WrapperBookVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -189,6 +190,7 @@ public class BookControllerJsonTest extends AbstractIntegrationTest{
 		var content =
 				given().spec(specification)
 						.contentType(TestConfigs.CONTENT_TYPE_JSON)
+						.queryParams("page", 0 , "limit", 12, "direction", "asc")
 						.when()
 						.get()
 						.then()
@@ -200,7 +202,9 @@ public class BookControllerJsonTest extends AbstractIntegrationTest{
 						//.as(new TypeRef<List<BookVO>>() {});
 
 
-		List<BookVO> books = objectMapper.readValue(content, new TypeReference<List<BookVO>>() {});
+		WrapperBookVO wrapper = objectMapper.readValue(content,WrapperBookVO.class);
+
+		List<BookVO> books = wrapper.getEmbedded().getBooks();
 		BookVO foundBookOne = books.get(0);
 
 		assertNotNull(foundBookOne.getId());
@@ -208,9 +212,11 @@ public class BookControllerJsonTest extends AbstractIntegrationTest{
 		assertNotNull(foundBookOne.getAuthor());
 		assertNotNull(foundBookOne.getPrice());
 		assertTrue(foundBookOne.getId() > 0);
-		assertEquals("Working effectively with legacy code", foundBookOne.getTitle());
-		assertEquals("Michael C. Feathers", foundBookOne.getAuthor());
-		assertEquals(49.00, foundBookOne.getPrice());
+		assertEquals(12,foundBookOne.getId());
+		assertEquals("Big Data: como extrair volume, variedade, velocidade e valor da avalanche de informação " +
+				"cotidiana", foundBookOne.getTitle());
+		assertEquals("Viktor Mayer-Schonberger e Kenneth Kukier", foundBookOne.getAuthor());
+		assertEquals(54.0, foundBookOne.getPrice());
 
 		BookVO foundBookFive = books.get(4);
 
@@ -219,9 +225,11 @@ public class BookControllerJsonTest extends AbstractIntegrationTest{
 		assertNotNull(foundBookFive.getAuthor());
 		assertNotNull(foundBookFive.getPrice());
 		assertTrue(foundBookFive.getId() > 0);
-		assertEquals("Code complete", foundBookFive.getTitle());
-		assertEquals("Steve McConnell", foundBookFive.getAuthor());
-		assertEquals(58.0, foundBookFive.getPrice());
+
+		assertEquals(8,foundBookFive.getId());
+		assertEquals("Domain Driven Design", foundBookFive.getTitle());
+		assertEquals("Eric Evans", foundBookFive.getAuthor());
+		assertEquals(92.0, foundBookFive.getPrice());
 	}
 	@Order(6)
 	@Test
