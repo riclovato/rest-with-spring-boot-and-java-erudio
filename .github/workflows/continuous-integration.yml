@@ -31,7 +31,7 @@ jobs:
       
     - name: Docker Compose Build
       working-directory: /home/runner/work/rest-with-spring-boot-and-java-erudio
-      run: Docker compose build
+      run: docker compose build
      
     - name: Push to Docker Hub Container Registry
       run: |
