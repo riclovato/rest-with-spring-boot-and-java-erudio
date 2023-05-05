@@ -11,9 +11,9 @@ security:
       expire-length: 3600000
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/rest_with_spring_boot_erudio?useTimeZone=true&serverTimezone=UTC
-    username: root
-    password: admin1234
+    url: jdbc:mysql://rest-with-spring-boot-and-java-erudio.czpudedhrjih.sa-east-1.rds.amazonaws.com:3306/rest_with_spring_boot_and_java_erudio?useTimeZone=true&serverTimezone=UTC
+    username: docker
+    password: admin123
 
   jpa:
     hibernate:

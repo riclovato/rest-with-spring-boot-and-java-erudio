@@ -223,7 +223,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest{
 		var content =
 				given().spec(specification)
 						.contentType(TestConfigs.CONTENT_TYPE_JSON)
-						.queryParams("page",3,"size",10,"direction","asc")
+						.queryParams("page",3,"size",12,"direction","asc")
 						.when()
 						.get()
 						.then()
@@ -245,14 +245,14 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest{
 		assertNotNull(foundPersonOne.getGender());
 		assertTrue(foundPersonOne.getEnabled());
 
-		assertEquals(247,foundPersonOne.getId());
+		assertEquals(742,foundPersonOne.getId());
 
 		assertEquals("Anderson", foundPersonOne.getFirstName());
-		assertEquals("Dyka", foundPersonOne.getLastName());
-		assertEquals("79 Spenser Alley", foundPersonOne.getAddress());
+		assertEquals("Lumsdale", foundPersonOne.getLastName());
+		assertEquals("010 Prairie Rose Circle", foundPersonOne.getAddress());
 		assertEquals("Male", foundPersonOne.getGender());
 
-		PersonVO foundPerson4= people.get(3);
+		PersonVO foundPerson4= people.get(1);
 
 		assertNotNull(foundPerson4.getId());
 		assertNotNull(foundPerson4.getFirstName());
@@ -261,11 +261,11 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest{
 		assertNotNull(foundPerson4.getGender());
 		assertTrue(foundPerson4.getEnabled());
 
-		assertEquals(589,foundPerson4.getId());
+		assertEquals(554,foundPerson4.getId());
 
-		assertEquals("Annamarie", foundPerson4.getFirstName());
-		assertEquals("Botton", foundPerson4.getLastName());
-		assertEquals("417 Porter Court", foundPerson4.getAddress());
+		assertEquals("Angil", foundPerson4.getFirstName());
+		assertEquals("Spinke", foundPerson4.getLastName());
+		assertEquals("2886 Moose Point", foundPerson4.getAddress());
 		assertEquals("Female", foundPerson4.getGender());
 	}
 	@Order(7)
