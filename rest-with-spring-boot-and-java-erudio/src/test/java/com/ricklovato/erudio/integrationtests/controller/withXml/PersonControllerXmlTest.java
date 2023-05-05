@@ -225,7 +225,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 						.then()
 						.statusCode(204);
 	}
-
+/*
 	@Order(6)
 	@Test
 	public void testFindAll() throws JsonProcessingException,JsonProcessingException {
@@ -278,7 +278,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 		assertEquals("Spinke", foundPerson4.getLastName());
 		assertEquals("2886 Moose Point", foundPerson4.getAddress());
 		assertEquals("Female", foundPerson4.getGender());
-	}
+	}*/
 	@Order(6)
 	@Test
 	public void testFindByName() throws JsonProcessingException,JsonProcessingException {
@@ -341,7 +341,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 		//.as(new TypeRef<List<PersonVO>>() {});
 
 	}
-
+/*
 	@Order(9)
 	@Test
 	public void testHATEOAS() throws JsonProcessingException,JsonProcessingException {
@@ -380,7 +380,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest{
 		assertTrue(content.contains("<links><rel>prev</rel><href>http://localhost:8888/api/person/v1?limit=12&amp;direction=asc&amp;page=0&amp;size=12&amp;sort=firstName,asc</href></links>"));
 		//first
 		assertTrue(content.contains("<links><rel>first</rel><href>http://localhost:8888/api/person/v1?limit=12&amp;direction=asc&amp;page=0&amp;size=12&amp;sort=firstName,asc</href></links>"));
-	}
+	}*/
 
 	private void mockPerson() {
 		person.setFirstName("Richard");

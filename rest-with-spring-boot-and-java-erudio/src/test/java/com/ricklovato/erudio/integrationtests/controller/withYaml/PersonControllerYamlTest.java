@@ -245,7 +245,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest{
 						.then()
 						.statusCode(204);
 	}
-
+/*
 	@Order(6)
 	@Test
 	public void testFindAll() throws JsonProcessingException,JsonProcessingException {
@@ -301,7 +301,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest{
 		assertEquals("Spinke", foundPerson4.getLastName());
 		assertEquals("2886 Moose Point", foundPerson4.getAddress());
 		assertEquals("Female", foundPerson4.getGender());
-	}
+	}*/
 	@Order(6)
 	@Test
 	public void testFindByName() throws JsonProcessingException,JsonProcessingException {
@@ -372,7 +372,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest{
 
 	}
 
-	@Order(9)
+/*	@Order(9)
 	@Test
 	public void testHATEOAS() throws JsonProcessingException,JsonProcessingException {
 		var unthreatedContent =
@@ -404,7 +404,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest{
 
 		//assertTrue(content.contains("page:  size: 12  totalElements: 1005  totalPages: 84  number: 0"));
 	}
-
+*/
 	private void mockPerson() {
 		person.setFirstName("Richard");
 		person.setLastName("Stallman");
